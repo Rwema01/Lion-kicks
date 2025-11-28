@@ -1,0 +1,225 @@
+<%- include('partials/header') %>
+
+<section class="container mx-auto py-12">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-8">Complete Your Purchase</h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Order Details & Form -->
+            <div>
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold mb-4">Order Details</h3>
+                    
+                    <div class="flex items-center mb-4">
+                        <img src="<%= shoe.image %>" alt="<%= shoe.name %>" class="w-20 h-20 object-cover rounded-lg">
+                        <div class="ml-4">
+                            <h4 class="font-semibold text-lg"><%= shoe.name %></h4>
+                            <p class="text-gray-600"><%= shoe.category %> - <%= shoe.gender %></p>
+                            <p class="text-lion-gold font-bold">
+                                $<%= shoe.priceUSD %> / FRW <%= shoe.priceFRW.toLocaleString() %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Information -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4">Shipping Information</h3>
+                    
+                    <form id="purchaseForm">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">First Name *</label>
+                                <input type="text" name="firstName" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-lion-gold" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Last Name *</label>
+                                <input type="text" name="lastName" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-lion-gold" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Email Address *</label>
+                            <input type="email" name="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-lion-gold" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">MTN Phone Number *</label>
+                            <input type="tel" name="phone" placeholder="07X XXX XXXX" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-lion-gold" required>
+                            <p class="text-xs text-gray-500 mt-1">We'll send payment prompt to this MTN number</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Delivery Address *</label>
+                            <textarea name="address" rows="3" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-lion-gold" placeholder="Enter your complete delivery address" required></textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-gray-700 mb-2">City *</label>
+                                <input type="text" name="city" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-lion-gold" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Postal Code</label>
+                                <input type="text" name="postalCode" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-lion-gold">
+                            </div>
+                        </div>
+
+                        <!-- Payment Method - MTN Mobile Money Only -->
+                        <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 class="font-semibold mb-2 flex items-center">
+                                <span class="text-2xl mr-2">📱</span>
+                                Payment Method
+                            </h4>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold">MTN Mobile Money</p>
+                                    <p class="text-sm text-gray-600">You'll receive a payment prompt on your phone</p>
+                                </div>
+                                <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                    Selected
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MTN Mobile Money Instructions -->
+                        <div class="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <h4 class="font-semibold mb-2">💡 How to Pay with MTN Mobile Money</h4>
+                            <ol class="text-sm text-gray-700 space-y-2">
+                                <li class="flex items-start">
+                                    <span class="bg-lion-gold text-lion-black rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">1</span>
+                                    <span>Submit your order with your MTN phone number</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-lion-gold text-lion-black rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">2</span>
+                                    <span>Wait for USSD prompt on your phone (from 182)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-lion-gold text-lion-black rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">3</span>
+                                    <span>Enter your Mobile Money PIN to complete payment</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-lion-gold text-lion-black rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">4</span>
+                                    <span>Receive confirmation SMS from MTN</span>
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-lion-gold text-lion-black py-4 rounded-lg font-semibold hover:bg-yellow-500 text-lg transition duration-200 flex items-center justify-center">
+                            <span class="mr-2">📱</span>
+                            Pay with MTN Mobile Money - $<%= totalUSD.toFixed(2) %>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div>
+                <div class="bg-white rounded-lg shadow-lg p-6 sticky top-4">
+                    <h3 class="text-xl font-bold mb-4">Order Summary</h3>
+                    
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between">
+                            <span>Product Price:</span>
+                            <span>$<%= shoe.priceUSD.toFixed(2) %></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Delivery Fee:</span>
+                            <span>$<%= deliveryFeeUSD.toFixed(2) %></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Tax (18%):</span>
+                            <span>$<%= taxUSD.toFixed(2) %></span>
+                        </div>
+                        <div class="border-t pt-3 flex justify-between font-bold text-lg">
+                            <span>Total Amount:</span>
+                            <span class="text-lion-gold">$<%= totalUSD.toFixed(2) %></span>
+                        </div>
+                        <div class="text-sm text-gray-600 text-right">
+                            FRW <%= totalFRW.toLocaleString() %>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Info -->
+                    <div class="border-t pt-4 mt-4">
+                        <h4 class="font-semibold mb-2">🚚 Delivery Information</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Free delivery within Kigali</li>
+                            <li>• 1-2 business days delivery</li>
+                            <li>• Prepaid via MTN Mobile Money only</li>
+                            <li>• Free returns within 3 days</li>
+                        </ul>
+                    </div>
+
+                    <!-- Support Info -->
+                    <div class="border-t pt-4 mt-4">
+                        <h4 class="font-semibold mb-2">📞 Need Help with Payment?</h4>
+                        <p class="text-sm text-gray-600 mb-2">
+                            Having issues with MTN Mobile Money?
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            Contact us: +250 786 233 645<br>
+                            Email: support@lionkicks.rw
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>
+
+<script>
+document.getElementById('purchaseForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Validate phone number format
+    const phoneInput = this.querySelector('input[name="phone"]');
+    const phone = phoneInput.value.trim();
+    
+    // Rwandan phone number validation
+    const rwandaRegex = /^(07[2-8][0-9]{7}|2507[2-8][0-9]{7}|\+2507[2-8][0-9]{7})$/;
+    const cleanPhone = phone.replace(/\s/g, '');
+    
+    if (!rwandaRegex.test(cleanPhone)) {
+        alert('📱 Please enter a valid MTN Rwanda phone number (e.g., 07X XXX XXXX)');
+        phoneInput.focus();
+        return;
+    }
+    
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    
+    submitButton.disabled = true;
+    submitButton.textContent = 'Sending MTN Payment Prompt...';
+    submitButton.classList.add('opacity-50');
+    
+    try {
+        const response = await fetch(`/purchase/<%= shoe.id %>`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`📱 MTN Mobile Money Payment Initiated!\n\nOrder Number: ${result.orderNumber}\nAmount: FRW <%= totalFRW.toLocaleString() %>\n\nPlease check your phone to complete the payment. We'll notify you once confirmed.`);
+            window.location.href = '/';
+        } else {
+            alert(result.error || 'Failed to process payment. Please try again.');
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+            submitButton.classList.remove('opacity-50');
+        }
+    } catch (error) {
+        console.error('Error processing purchase:', error);
+        alert('An error occurred while processing your payment. Please check your connection and try again.');
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+        submitButton.classList.remove('opacity-50');
+    }
+});
+</script>

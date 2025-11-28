@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+
+<section class="container mx-auto py-12">
+    <h2 class="text-3xl font-bold mb-6"><%= shoe.name %></h2>
+    <div class="flex flex-col md:flex-row gap-6">
+        <img src="<%= shoe.image %>" alt="<%= shoe.name %>" class="w-full md:w-1/2 h-64 object-cover rounded-lg">
+        <div class="flex-1">
+            <p><strong>Category:</strong> <%= shoe.category %></p>
+            <p><strong>Gender:</strong> <%= shoe.gender %></p>
+            <p><strong>Price:</strong> $<%= shoe.priceUSD %> / FRW <%= shoe.priceFRW.toLocaleString() %></p>
+            <p><strong>Material:</strong> <%= shoe.material || 'N/A' %></p>
+            <p><strong>Sizes:</strong> <%= shoe.sizes %></p>
+            <p><strong>Stock:</strong> <%= shoe.quantity > 0 ? 'In Stock (' + shoe.quantity + ')' : 'Out of Stock' %></p>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

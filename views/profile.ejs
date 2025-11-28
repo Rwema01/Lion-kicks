@@ -1,0 +1,304 @@
+<%- include('partials/header') %>
+
+<section class="container mx-auto py-12">
+    <div class="max-w-2xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-8">My Profile</h2>
+        
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-4">Name: 
+                    <span id="username-display"><%= user.username %></span>
+                    <button id="edit-username-btn" class="ml-2 text-sm bg-lion-gold text-lion-black px-2 py-1 rounded hover:bg-yellow-500">
+                        Edit username
+                    </button>
+                </h3>
+                
+                <!-- Username Edit Form (Hidden by default) -->
+                <div id="username-edit-form" class="hidden mb-4 p-4 bg-gray-50 rounded-lg">
+                    <form id="username-form" class="space-y-3">
+                        <div>
+                            <label for="new-username" class="block text-sm font-medium text-gray-700 mb-1">New Username</label>
+                            <input 
+                                type="text" 
+                                id="new-username" 
+                                name="newUsername" 
+                                value="<%= user.username %>"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-lion-gold"
+                                required
+                            >
+                        </div>
+                        <div class="flex space-x-2">
+                            <button 
+                                type="submit" 
+                                class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                            >
+                                Save
+                            </button>
+                            <button 
+                                type="button" 
+                                id="cancel-username-edit" 
+                                class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="space-y-2">
+                    <p><strong>Email:</strong> <%= user.email %></p>
+                </div>
+                
+                <!-- Password Edit Section -->
+                <div class="mt-6 pt-4 border-t">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-lg font-bold">Password</h4>
+                        <button id="edit-password-btn" class="text-sm bg-lion-gold text-lion-black px-2 py-1 rounded hover:bg-yellow-500">
+                            Change Password
+                        </button>
+                    </div>
+                    
+                    <!-- Password Edit Form (Hidden by default) -->
+                    <div id="password-edit-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg">
+                        <form id="password-form" class="space-y-3">
+                            <div>
+                                <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                                <input 
+                                    type="password" 
+                                    id="current-password" 
+                                    name="currentPassword" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-lion-gold"
+                                    required
+                                >
+                            </div>
+                            <div>
+                                <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                                <input 
+                                    type="password" 
+                                    id="new-password" 
+                                    name="newPassword" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-lion-gold"
+                                    required
+                                >
+                            </div>
+                            <div>
+                                <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                                <input 
+                                    type="password" 
+                                    id="confirm-password" 
+                                    name="confirmPassword" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-lion-gold"
+                                    required
+                                >
+                            </div>
+                            <div class="flex space-x-2">
+                                <button 
+                                    type="submit" 
+                                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                                >
+                                    Update Password
+                                </button>
+                                <button 
+                                    type="button" 
+                                    id="cancel-password-edit" 
+                                    class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t pt-6">
+                <h4 class="text-lg font-bold mb-4">Quick Actions</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="/shop" class="bg-lion-gold text-lion-black text-center py-3 rounded-lg font-semibold hover:bg-yellow-500">
+                        Continue Shopping
+                    </a>
+                    <a href="/auth/logout" class="bg-red-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-red-700">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success/Error Message Toast -->
+<div id="message-toast" class="fixed top-4 right-4 p-4 rounded-lg shadow-lg hidden z-50">
+    <div class="flex items-center">
+        <span id="toast-message" class="mr-3"></span>
+        <button id="close-toast" class="text-gray-500 hover:text-gray-700">
+            &times;
+        </button>
+    </div>
+</div>
+
+<script>
+    // DOM Elements
+    const usernameDisplay = document.getElementById('username-display');
+    const editUsernameBtn = document.getElementById('edit-username-btn');
+    const usernameEditForm = document.getElementById('username-edit-form');
+    const usernameForm = document.getElementById('username-form');
+    const newUsernameInput = document.getElementById('new-username');
+    const cancelUsernameEdit = document.getElementById('cancel-username-edit');
+    
+    const editPasswordBtn = document.getElementById('edit-password-btn');
+    const passwordEditForm = document.getElementById('password-edit-form');
+    const passwordForm = document.getElementById('password-form');
+    const currentPasswordInput = document.getElementById('current-password');
+    const newPasswordInput = document.getElementById('new-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const cancelPasswordEdit = document.getElementById('cancel-password-edit');
+    
+    const messageToast = document.getElementById('message-toast');
+    const toastMessage = document.getElementById('toast-message');
+    const closeToast = document.getElementById('close-toast');
+    
+    // Toggle Username Edit Form
+    editUsernameBtn.addEventListener('click', () => {
+        usernameEditForm.classList.toggle('hidden');
+        newUsernameInput.focus();
+    });
+    
+    // Cancel Username Edit
+    cancelUsernameEdit.addEventListener('click', () => {
+        usernameEditForm.classList.add('hidden');
+        newUsernameInput.value = usernameDisplay.textContent;
+    });
+    
+    // Submit Username Change
+    usernameForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const newUsername = newUsernameInput.value.trim();
+        
+        if (!newUsername) {
+            showMessage('Username cannot be empty', 'error');
+            return;
+        }
+        
+        if (newUsername === usernameDisplay.textContent) {
+            showMessage('New username is the same as current', 'error');
+            return;
+        }
+        
+        try {
+            // Send request to update username
+            const response = await fetch('/profile/update-username', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ newUsername }),
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Update displayed username
+                usernameDisplay.textContent = newUsername;
+                usernameEditForm.classList.add('hidden');
+                showMessage('Username updated successfully!', 'success');
+            } else {
+                showMessage(result.message || 'Failed to update username', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating username:', error);
+            showMessage('An error occurred while updating username', 'error');
+        }
+    });
+    
+    // Toggle Password Edit Form
+    editPasswordBtn.addEventListener('click', () => {
+        passwordEditForm.classList.toggle('hidden');
+        currentPasswordInput.focus();
+    });
+    
+    // Cancel Password Edit
+    cancelPasswordEdit.addEventListener('click', () => {
+        passwordEditForm.classList.add('hidden');
+        passwordForm.reset();
+    });
+    
+    // Submit Password Change
+    passwordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const currentPassword = currentPasswordInput.value;
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        // Validation
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            showMessage('All password fields are required', 'error');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            showMessage('New passwords do not match', 'error');
+            return;
+        }
+        
+        if (newPassword.length < 6) {
+            showMessage('New password must be at least 6 characters long', 'error');
+            return;
+        }
+        
+        try {
+            // Send request to update password
+            const response = await fetch('/profile/update-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword
+                }),
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Reset form and hide it
+                passwordForm.reset();
+                passwordEditForm.classList.add('hidden');
+                showMessage('Password updated successfully!', 'success');
+            } else {
+                showMessage(result.message || 'Failed to update password', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating password:', error);
+            showMessage('An error occurred while updating password', 'error');
+        }
+    });
+    
+    // Show message toast
+    function showMessage(message, type) {
+        toastMessage.textContent = message;
+        
+        // Set background color based on message type
+        if (type === 'success') {
+            messageToast.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 bg-green-500 text-white';
+        } else {
+            messageToast.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 bg-red-500 text-white';
+        }
+        
+        messageToast.classList.remove('hidden');
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            messageToast.classList.add('hidden');
+        }, 5000);
+    }
+    
+    // Close toast manually
+    closeToast.addEventListener('click', () => {
+        messageToast.classList.add('hidden');
+    });
+</script>
+
+<%- include('partials/footer') %>

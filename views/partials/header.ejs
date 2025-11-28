@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'lion-gold': '#FFD700',
+                        'lion-black': '#000000',
+                        'lion-white': '#FFFFFF'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <header class="bg-lion-black text-lion-gold p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <a href="/" class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-br from-lion-gold to-yellow-600 text-lion-black h-16 w-16 rounded-lg flex items-center justify-center font-bold text-xl shadow-lg">
+                        LK
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Lion Kicks</h1>
+                        <p class="text-lion-white text-sm">Rwanda Shoe Store</p>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="flex items-center space-x-4">
+                <a href="/" class="text-lion-white hover:text-lion-gold">Home</a>
+                <a href="/shop" class="text-lion-white hover:text-lion-gold">Shop</a>
+                <a href="/about" class="text-lion-white hover:text-lion-gold">About</a>
+                <a href="/contact" class="text-lion-white hover:text-lion-gold">Contact</a>
+                
+                <% if (user) { %>
+                    <div class="flex items-center space-x-4">
+                        <a href="/profile" class="text-lion-white hover:text-lion-gold">
+                            Welcome, <%= user.username %>
+                        </a>
+                        <a href="/auth/logout" class="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700">
+                            Logout
+                        </a>
+                    </div>
+                <% } else { %>
+                    <div class="flex items-center space-x-4">
+                        <a href="/auth/login" class="text-lion-white hover:text-lion-gold">Login</a>
+                        <a href="/auth/register" class="bg-lion-gold text-lion-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-500">
+                            Sign Up
+                        </a>
+                    </div>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">

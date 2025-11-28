@@ -1,0 +1,128 @@
+<%- include('../partials/header') %>
+
+<section class="container mx-auto py-12">
+    <h2 class="text-4xl font-bold text-center mb-12">Women Shoes</h2>
+
+    <!-- Filter Buttons -->
+    <div class="flex justify-center mb-8 space-x-4">
+        <a href="/shop" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300">All</a>
+        <a href="/shop/men" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300">Men</a>
+        <a href="/shop/women" class="px-4 py-2 bg-lion-gold text-lion-black rounded-lg font-semibold hover:bg-yellow-500">Women</a>
+        <a href="/shop/kids" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300">Kids</a>
+    </div>
+
+    <!-- Shoes Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <% shoes.forEach(shoe => { %>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                <img src="<%= shoe.image %>" alt="<%= shoe.name %>" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold mb-2"><%= shoe.name %></h3>
+                    <p class="text-gray-600 mb-2"><%= shoe.category %></p>
+                    <p class="font-bold mb-4">
+                        $<%= shoe.priceUSD %> / FRW <%= shoe.priceFRW.toLocaleString() %>
+                    </p>
+                    <button onclick="openModal('<%= shoe.id %>')" 
+                        class="w-full bg-lion-gold text-lion-black text-center py-2 rounded-lg font-semibold hover:bg-yellow-500">
+                        View Details
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal for this shoe -->
+            <div id="modal-<%= shoe.id %>" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50 p-4">
+                <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <h3 class="text-2xl font-bold"><%= shoe.name %></h3>
+                        <button onclick="closeModal('<%= shoe.id %>')" class="text-2xl font-bold hover:text-gray-600">&times;</button>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/2">
+                            <img src="<%= shoe.image %>" alt="<%= shoe.name %>" class="w-full h-64 object-cover">
+                        </div>
+                        
+                        <div class="md:w-1/2 p-6">
+                            <div class="space-y-3 mb-6">
+                                <p><strong class="text-gray-700">Category:</strong> <%= shoe.category %></p>
+                                <p><strong class="text-gray-700">Gender:</strong> <%= shoe.gender %></p>
+                                <p><strong class="text-gray-700">Material:</strong> <%= shoe.material %></p>
+                                <p><strong class="text-gray-700">Available Sizes:</strong> <%= shoe.sizes %></p>
+                                <p><strong class="text-gray-700">Stock:</strong> 
+                                    <span class="<%= shoe.quantity > 0 ? 'text-green-600' : 'text-red-600' %>">
+                                        <%= shoe.quantity > 0 ? 'In Stock (' + shoe.quantity + ')' : 'Out of Stock' %>
+                                    </span>
+                                </p>
+                            </div>
+
+                            <div class="mb-6">
+                                <p class="text-2xl font-bold text-lion-gold">
+                                    $<%= shoe.priceUSD %> / FRW <%= shoe.priceFRW.toLocaleString() %>
+                                </p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <% if (shoe.quantity > 0) { %>
+                                    <a href="/buy/<%= shoe.id %>" 
+                                       class="block w-full bg-black text-lion-gold text-center py-3 rounded-lg font-semibold hover:bg-gray-900 transition duration-200">
+                                        <span class="text-white">🛒</span> Buy Now - $<%= shoe.priceUSD %>
+                                    </a>
+                                    <button onclick="closeModal('<%= shoe.id %>')" 
+                                            class="w-full border border-lion-gold text-lion-gold py-2 rounded-lg font-semibold hover:bg-lion-gold hover:text-lion-black transition duration-200">
+                                        Continue Shopping
+                                    </button>
+                                <% } else { %>
+                                    <button class="w-full bg-gray-400 text-gray-700 py-3 rounded-lg font-semibold cursor-not-allowed" disabled>
+                                        Out of Stock
+                                    </button>
+                                    <button onclick="closeModal('<%= shoe.id %>')" 
+                                            class="w-full border border-lion-gold text-lion-gold py-2 rounded-lg font-semibold hover:bg-lion-gold hover:text-lion-black transition duration-200">
+                                        Continue Shopping
+                                    </button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</section>
+
+<%- include('../partials/footer') %>
+
+<script>
+function openModal(id) {
+    document.getElementById('modal-' + id).classList.remove('hidden');
+    document.getElementById('modal-' + id).classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+    document.getElementById('modal-' + id).classList.remove('flex');
+    document.getElementById('modal-' + id).classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('fixed')) {
+        const modals = document.querySelectorAll('[id^="modal-"]');
+        modals.forEach(modal => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        });
+        document.body.style.overflow = 'auto';
+    }
+});
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modals = document.querySelectorAll('[id^="modal-"]');
+        modals.forEach(modal => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        });
+        document.body.style.overflow = 'auto';
+    }
+});
+</script>

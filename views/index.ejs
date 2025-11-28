@@ -1,0 +1,208 @@
+<%- include('partials/header') %>
+
+    <!-- Hero -->
+    <section class="bg-gradient-to-r from-lion-black to-gray-900 text-lion-white py-20">
+        <div class="container mx-auto text-center">
+            <h2 class="text-5xl font-bold mb-6">Find Your Perfect Kicks in Rwanda</h2>
+            <p class="text-xl mb-8">Find sneakers, boots, formal shoes, and more — all in one place.</p>
+
+            <!-- Search -->
+            <div class="max-w-2xl mx-auto bg-white rounded-lg p-2 shadow-lg">
+                <div class="flex">
+                    <input type="text" placeholder="Search for shoes, brands, sizes..."
+                        class="flex-grow px-4 py-3 text-gray-800 rounded-l-lg focus:outline-none">
+                    <button
+                        class="bg-lion-gold text-lion-black px-8 py-3 rounded-r-lg font-semibold hover:bg-yellow-500">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="container mx-auto py-12">
+        <h3 class="text-3xl font-bold text-center mb-8">Shop by Category</h3>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <a href="/shop" class="bg-white p-6 rounded-lg shadow text-center hover:shadow-lg transition block">
+                <div class="text-3xl mb-3">👟</div>
+                <h4 class="font-semibold">All Shoes</h4>
+            </a>
+            <a href="/shop/men" class="bg-white p-6 rounded-lg shadow text-center hover:shadow-lg transition block">
+                <div class="text-3xl mb-3">👨</div>
+                <h4 class="font-semibold">Men</h4>
+            </a>
+            <a href="/shop/women" class="bg-white p-6 rounded-lg shadow text-center hover:shadow-lg transition block">
+                <div class="text-3xl mb-3">👩</div>
+                <h4 class="font-semibold">Women</h4>
+            </a>
+            <a href="/shop/kids" class="bg-white p-6 rounded-lg shadow text-center hover:shadow-lg transition block">
+                <div class="text-3xl mb-3">👶</div>
+                <h4 class="font-semibold">Kids</h4>
+            </a>
+        </div>
+    </section>
+
+    <!-- Featured Shoes -->
+    <section class="container mx-auto py-12">
+        <h3 class="text-3xl font-bold text-center mb-8">Featured Shoes</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <% shoes.forEach(shoe=> { %>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                    <img src="<%= shoe.image %>" alt="<%= shoe.name %>" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-2">
+                            <%= shoe.name %>
+                        </h3>
+                        <p class="text-gray-600 mb-2">
+                            <%= shoe.category %>
+                        </p>
+                        <p class="font-bold mb-4">
+                            $<%= shoe.priceUSD %> / FRW <%= shoe.priceFRW.toLocaleString() %>
+                        </p>
+                        <button onclick="openModal('<%= shoe.id %>')"
+                            class="w-full bg-lion-gold text-lion-black text-center py-2 rounded-lg font-semibold hover:bg-yellow-500">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal for this shoe -->
+                <div id="modal-<%= shoe.id %>"
+                    class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50 p-4">
+                    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <div class="flex justify-between items-center p-6 border-b">
+                            <h3 class="text-2xl font-bold">
+                                <%= shoe.name %>
+                            </h3>
+                            <button onclick="closeModal('<%= shoe.id %>')"
+                                class="text-2xl font-bold hover:text-gray-600">&times;</button>
+                        </div>
+
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/2">
+                                <img src="<%= shoe.image %>" alt="<%= shoe.name %>" class="w-full h-64 object-cover">
+                            </div>
+
+                            <div class="md:w-1/2 p-6">
+                                <div class="space-y-3 mb-6">
+                                    <p><strong class="text-gray-700">Category:</strong>
+                                        <%= shoe.category %>
+                                    </p>
+                                    <p><strong class="text-gray-700">Gender:</strong>
+                                        <%= shoe.gender %>
+                                    </p>
+                                    <p><strong class="text-gray-700">Material:</strong>
+                                        <%= shoe.material %>
+                                    </p>
+                                    <p><strong class="text-gray-700">Available Sizes:</strong>
+                                        <%= shoe.sizes %>
+                                    </p>
+                                    <p><strong class="text-gray-700">Stock:</strong>
+                                        <span class="<%= shoe.quantity > 0 ? 'text-green-600' : 'text-red-600' %>">
+                                            <%= shoe.quantity> 0 ? 'In Stock (' + shoe.quantity + ')' : 'Out of Stock'
+                                                %>
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="mb-6">
+                                    <p class="text-2xl font-bold text-lion-gold">
+                                        $<%= shoe.priceUSD %> / FRW <%= shoe.priceFRW.toLocaleString() %>
+                                    </p>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <% if (shoe.quantity > 0) { %>
+                                        <a href="/buy/<%= shoe.id %>" 
+                                           class="block w-full bg-black text-lion-gold text-center py-3 rounded-lg font-semibold hover:bg-gray-900 transition duration-200">
+                                            <span class="text-white">🛒</span> Buy Now - $<%= shoe.priceUSD %>
+                                        </a>
+                                        <button onclick="closeModal('<%= shoe.id %>')" 
+                                                class="w-full border border-lion-gold text-lion-gold py-2 rounded-lg font-semibold hover:bg-lion-gold hover:text-lion-black transition duration-200">
+                                            Continue Shopping
+                                        </button>
+                                    <% } else { %>
+                                        <button class="w-full bg-gray-400 text-gray-700 py-3 rounded-lg font-semibold cursor-not-allowed" disabled>
+                                            Out of Stock
+                                        </button>
+                                        <button onclick="closeModal('<%= shoe.id %>')" 
+                                                class="w-full border border-lion-gold text-lion-gold py-2 rounded-lg font-semibold hover:bg-lion-gold hover:text-lion-black transition duration-200">
+                                            Continue Shopping
+                                        </button>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="bg-lion-gold py-12">
+        <div class="container mx-auto text-center">
+            <h3 class="text-3xl font-bold text-lion-black mb-8">How Lion Kicks Works</h3>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-4xl mb-4">1</div>
+                    <h4 class="font-semibold text-lg mb-2">Sign Up</h4>
+                    <p class="text-gray-600">Create your account and start shopping.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-4xl mb-4">2</div>
+                    <h4 class="font-semibold text-lg mb-2">Browse Shoes</h4>
+                    <p class="text-gray-600">Explore high-quality shoes for all occasions.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-4xl mb-4">3</div>
+                    <h4 class="font-semibold text-lg mb-2">Order & Receive</h4>
+                    <p class="text-gray-600">Enjoy fast and easy ordering.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+        <script>
+            function openModal(id) {
+                document.getElementById('modal-' + id).classList.remove('hidden');
+                document.getElementById('modal-' + id).classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal(id) {
+                document.getElementById('modal-' + id).classList.remove('flex');
+                document.getElementById('modal-' + id).classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            document.addEventListener('click', function (event) {
+                if (event.target.classList.contains('fixed')) {
+                    const modals = document.querySelectorAll('[id^="modal-"]');
+                    modals.forEach(modal => {
+                        modal.classList.remove('flex');
+                        modal.classList.add('hidden');
+                    });
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    const modals = document.querySelectorAll('[id^="modal-"]');
+                    modals.forEach(modal => {
+                        modal.classList.remove('flex');
+                        modal.classList.add('hidden');
+                    });
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        </script>
