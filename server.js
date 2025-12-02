@@ -22,48 +22,42 @@ app.use(session({
     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
-// Add at the TOP of server.js
-require('dotenv').config();
-console.log('Environment check:', {
-  MONGO_URI: process.env.MONGO_URI ? 'SET' : 'NOT SET',
-  NODE_ENV: process.env.NODE_ENV
-});
-
-// Update your mongoose.connect
-const mongoURI = process.env.MONGO_URI;
-if (!mongoURI) {
-  console.error('❌ ERROR: MONGO_URI environment variable is not set!');
-  console.error('   Add MONGO_URI to Render environment variables');
-}
-
-mongoose.connect(mongoURI, {
-  serverSelectionTimeoutMS: 15000, // Increase timeout
-  socketTimeoutMS: 45000,
-})
-.then(() => {
-  console.log('🦁 Connected to MongoDB Atlas');
-  initializeDatabase();
-})
-.catch(err => {
-  console.error('MongoDB connection error:', err.message);
-  console.error('Check MONGO_URI in Render environment variables');
-});
-
 // Set EJS as template engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// In server.js, update MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/lionkicks', {
-    // Remove deprecated options
+// ---------------------------
+// MONGODB CONNECTION (FIXED - SINGLE CONNECTION)
+// ---------------------------
+require('dotenv').config();
+
+// Use MONGO_URI (Render uses this name) with fallback
+const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/lionkicks';
+
+console.log('=== ENVIRONMENT ===');
+console.log('MONGO_URI:', process.env.MONGO_URI ? 'SET' : 'NOT SET');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
+console.log('PORT:', process.env.PORT || 4000);
+console.log('===================');
+
+if (!process.env.MONGO_URI) {
+  console.warn('⚠️  MONGO_URI not set, using local MongoDB fallback');
+}
+
+mongoose.connect(mongoURI, {
+  serverSelectionTimeoutMS: 15000,
+  socketTimeoutMS: 45000,
 })
 .then(() => {
-    console.log('🦁 Connected to MongoDB');
-    initializeDatabase();
+  console.log('🦁 Connected to MongoDB');
+  initializeDatabase();
 })
 .catch(err => {
-    console.error('MongoDB connection error:', err.message);
-    process.exit(1); // Exit if no DB connection
+  console.error('❌ MongoDB connection failed:', err.message);
+  console.log('If deployed on Render, check:');
+  console.log('1. MONGO_URI environment variable is set');
+  console.log('2. MongoDB Atlas has 0.0.0.0/0 network access');
+  console.log('3. MongoDB Atlas user has read/write permissions');
 });
 
 // User Schema and Model
@@ -85,6 +79,7 @@ async function initializeDatabase() {
     try {
         const count = await Shoe.countDocuments();
         if (count === 0) {
+            console.log('📦 Adding sample shoes to database...');
             const sampleShoes = [
                 // Kids (8)
                 { id: 1, name: 'Low-Top Skate Sneaker (grey and white)', category: 'Sneakers', gender: 'Kids', priceUSD: 10, priceFRW: 10 * exchangeRate, image: '/images/kids1.png', sizes: '28-38', quantity: 20, material: 'Canvas' },
@@ -118,9 +113,11 @@ async function initializeDatabase() {
             ];
             await Shoe.insertMany(sampleShoes);
             console.log('✅ Sample shoes added to database');
+        } else {
+            console.log(`✅ Database already has ${count} shoes`);
         }
     } catch (error) {
-        console.error('Error initializing database:', error);
+        console.error('Error initializing database:', error.message);
     }
 }
 
@@ -128,11 +125,12 @@ async function initializeDatabase() {
 // ROUTES
 // ---------------------------
 
-// HOME
+// HOME - with better error handling
 app.get('/', async (req, res) => {
     try {
-        // Get featured shoes from MongoDB
+        console.log('Homepage: Attempting to fetch shoes...');
         const featuredShoes = await Shoe.find().limit(12).sort({ id: 1 });
+        console.log(`Homepage: Found ${featuredShoes.length} shoes`);
         
         res.render('index', {
             title: 'Lion Kicks - Buy Quality Shoes in Rwanda',
@@ -140,8 +138,13 @@ app.get('/', async (req, res) => {
             shoes: featuredShoes
         });
     } catch (error) {
-        console.error('Error loading home page:', error);
-        res.status(500).send('Server Error');
+        console.error('❌ Homepage database error:', error.message);
+        // Show empty page if database fails
+        res.render('index', {
+            title: 'Lion Kicks - Buy Quality Shoes in Rwanda',
+            user: req.session.user || null,
+            shoes: []
+        });
     }
 });
 
