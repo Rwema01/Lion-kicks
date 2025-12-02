@@ -3,7 +3,6 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-green)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.x-lightgrey)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-8.x-green)](https://www.mongodb.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A full-featured e-commerce platform for buying quality shoes in Rwanda with USD/FRW pricing.
 
@@ -43,3 +42,38 @@ A full-featured e-commerce platform for buying quality shoes in Rwanda with USD/
 | **Tailwind CSS** | Styling |
 
 ## 📁 Project Structure
+lion-kicks/
+├── server.js # Main application file
+├── package.json # Dependencies and scripts
+├── .env # Environment variables
+├── Procfile # Deployment configuration
+├── models/ # MongoDB models
+│ ├── Shoe.js
+│ ├── User.js
+│ └── Order.js
+├── views/ # EJS templates
+│ ├── index.ejs # Homepage
+│ ├── about.ejs # About page
+│ ├── contact.ejs # Contact page
+│ ├── buy.ejs # Product purchase page
+│ ├── profile.ejs # User profile page
+│ ├── 404.ejs # 404 error page
+│ ├── auth/ # Authentication views
+│ │ ├── login.ejs
+│ │ └── register.ejs
+│ ├── shop/ # Shop views
+│ │ ├── index.ejs
+│ │ ├── men.ejs
+│ │ ├── women.ejs
+│ │ ├── kids.ejs
+│ │ └── detail.ejs
+│ └── partials/ # Reusable partials
+│ ├── header.ejs
+│ └── footer.ejs
+└── public/ # Static files
+├── images/ # Product images
+├── css/ # Custom CSS
+│ └── style.css
+└── js/ # JavaScript files
+└── script.js
+
