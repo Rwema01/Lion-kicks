@@ -1,102 +1,90 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User'); // Make sure you have this model
+const bcrypt = require('bcrypt');
+const User = require('../models/User');
 
-// GET Register page
-router.get('/register', (req, res) => {
-    res.render('register');
+// GET login page
+router.get('/auth/login', (req, res) => {
+    if (req.session.user) return res.redirect('/');
+    res.render('auth/login', {
+        title: 'Login - Lion Kicks',
+        error: null,
+        message: req.query.message || null,
+        user: null
+    });
 });
 
-// POST Register - handle registration
-router.post('/register', async (req, res) => {
-    try {
-        const { username, email, password, confirmPassword } = req.body;
-
-        // Validation
-        if (password !== confirmPassword) {
-            return res.render('register', { 
-                error: 'Passwords do not match' 
-            });
-        }
-
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.render('register', { 
-                error: 'User already exists with this email' 
-            });
-        }
-
-        // Create new user
-        const newUser = new User({
-            username,
-            email,
-            password // Make sure to hash this in your User model
-        });
-
-        await newUser.save();
-
-        // Redirect to login page after successful registration
-        res.redirect('/auth/login');
-
-    } catch (error) {
-        console.error(error);
-        res.render('register', { 
-            error: 'An error occurred during registration' 
-        });
-    }
-});
-
-// GET Login page
-router.get('/login', (req, res) => {
-    res.render('login');
-});
-
-// POST Login - handle login
-router.post('/login', async (req, res) => {
+// POST login
+router.post('/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        if (!email || !password) {
+            return res.render('auth/login', { title: 'Login - Lion Kicks', error: 'Email and password are required', user: null });
+        }
 
-        // Find user
         const user = await User.findOne({ email });
-        if (!user) {
-            return res.render('login', { 
-                error: 'Invalid email or password' 
-            });
-        }
+        if (!user) return res.render('auth/login', { title: 'Login - Lion Kicks', error: 'User not found', user: null });
 
-        // Check password (make sure to compare hashed passwords)
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
-            return res.render('login', { 
-                error: 'Invalid email or password' 
-            });
-        }
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) return res.render('auth/login', { title: 'Login - Lion Kicks', error: 'Incorrect password', user: null });
 
-        // Create session
-        req.session.userId = user._id;
-        req.session.username = user.username;
-
-        // Redirect to homepage after successful login
+        req.session.user = { 
+            id: user._id, 
+            username: user.username, 
+            email: user.email,
+            role: user.role 
+        };
         res.redirect('/');
-
-    } catch (error) {
-        console.error(error);
-        res.render('login', { 
-            error: 'An error occurred during login' 
-        });
+    } catch (err) {
+        console.error(err);
+        res.render('auth/login', { title: 'Login - Lion Kicks', error: 'An error occurred during login', user: null });
     }
 });
 
-// Logout route
-router.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.redirect('/');
-        }
-        res.clearCookie('connect.sid');
-        res.redirect('/auth/login');
+// GET register page
+router.get('/auth/register', (req, res) => {
+    if (req.session.user) return res.redirect('/');
+    res.render('auth/register', {
+        title: 'Register - Lion Kicks',
+        error: null,
+        user: null
     });
+});
+
+// POST register
+router.post('/auth/register', async (req, res) => {
+    try {
+        const { username, email, password, confirmPassword } = req.body;
+        if (!username || !email || !password || !confirmPassword) {
+            return res.render('auth/register', { title: 'Register - Lion Kicks', error: 'All fields are required', user: null });
+        }
+        if (password !== confirmPassword) {
+            return res.render('auth/register', { title: 'Register - Lion Kicks', error: 'Passwords do not match', user: null });
+        }
+        if (password.length < 6) {
+            return res.render('auth/register', { title: 'Register - Lion Kicks', error: 'Password must be at least 6 characters', user: null });
+        }
+
+        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+        if (existingUser) {
+            return res.render('auth/register', { title: 'Register - Lion Kicks', error: 'Email or username already exists', user: null });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, email, password: hashedPassword });
+        await newUser.save();
+
+        res.redirect('/auth/login?message=Registration successful! Please login.');
+
+    } catch (err) {
+        console.error(err);
+        res.render('auth/register', { title: 'Register - Lion Kicks', error: 'An error occurred', user: null });
+    }
+});
+
+// GET logout
+router.get('/auth/logout', (req, res) => {
+    req.session.destroy(() => res.redirect('/auth/login'));
 });
 
 module.exports = router;
