@@ -1,90 +1,43 @@
 <%- include('../partials/header') %>
 
 <section class="container mx-auto py-12">
-    <div class="max-w-6xl mx-auto">
-        <!-- Breadcrumb -->
-        <nav class="mb-6">
-            <a href="/" class="text-lion-gold hover:underline">Home</a> &gt;
-            <a href="/shop" class="text-lion-gold hover:underline">Shop</a> &gt;
-            <span class="text-gray-600"><%= shoe.name %></span>
-        </nav>
+    <!-- Breadcrumb Navigation -->
+    <nav class="text-sm text-gray-500 mb-4">
+        <a href="/" class="hover:underline">Home</a> / 
+        <a href="/shop" class="hover:underline">Shop</a> / 
+        <span><%= shoe.name %></span>
+    </nav>
 
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="flex flex-col md:flex-row">
-                <!-- Product Image -->
-                <div class="md:w-1/2">
-                    <img src="<%= shoe.image %>" alt="<%= shoe.name %>" class="w-full h-96 object-cover">
-                </div>
-                
-                <!-- Product Details -->
-                <div class="md:w-1/2 p-8">
-                    <h1 class="text-3xl font-bold mb-4"><%= shoe.name %></h1>
-                    
-                    <div class="space-y-3 mb-6">
-                        <p><strong class="text-gray-700">Category:</strong> <%= shoe.category %></p>
-                        <p><strong class="text-gray-700">Gender:</strong> <%= shoe.gender %></p>
-                        <p><strong class="text-gray-700">Material:</strong> <%= shoe.material %></p>
-                        <p><strong class="text-gray-700">Available Sizes:</strong> <%= shoe.sizes %></p>
-                        <p><strong class="text-gray-700">Stock:</strong> 
-                            <span class="<%= shoe.quantity > 0 ? 'text-green-600' : 'text-red-600' %>">
-                                <%= shoe.quantity > 0 ? 'In Stock (' + shoe.quantity + ')' : 'Out of Stock' %>
-                            </span>
-                        </p>
-                    </div>
+    <h2 class="text-3xl font-bold mb-6"><%= shoe.name %></h2>
 
-                    <!-- Price -->
-                    <div class="mb-6">
-                        <p class="text-2xl font-bold text-lion-gold">
-                            $<%= shoe.priceUSD %> / FRW <%= shoe.priceFRW.toLocaleString() %>
-                        </p>
-                    </div>
+    <div class="flex flex-col md:flex-row gap-6">
+        <!-- Shoe Image -->
+        <img src="<%= shoe.image %>" alt="<%= shoe.name %>" class="w-full md:w-1/2 h-64 object-cover rounded-lg shadow-md">
 
-                    <!-- Action Buttons -->
-                    <div class="space-y-3">
-                        <% if (shoe.quantity > 0) { %>
-                            <button class="w-full bg-lion-gold text-lion-black py-3 rounded-lg font-semibold hover:bg-yellow-500 transition">
-                                Add to Cart
-                            </button>
-                        <% } else { %>
-                            <button class="w-full bg-gray-400 text-gray-700 py-3 rounded-lg font-semibold cursor-not-allowed" disabled>
-                                Out of Stock
-                            </button>
-                        <% } %>
-                        
-                        <a href="/shop" class="block w-full border border-lion-gold text-lion-gold text-center py-3 rounded-lg font-semibold hover:bg-lion-gold hover:text-lion-black transition">
-                            Continue Shopping
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Shoe Details -->
+        <div class="flex-1 bg-white p-6 rounded-lg shadow-lg">
+            <p><strong>Category:</strong> <%= shoe.category %></p>
+            <p><strong>Gender:</strong> <%= shoe.gender %></p>
+            <p><strong>Price:</strong> $<%= shoe.priceUSD %> / FRW <%= shoe.priceFRW.toLocaleString() %></p>
+            <p><strong>Material:</strong> <%= shoe.material || 'N/A' %></p>
+            <p><strong>Sizes Available:</strong> <%= shoe.sizes %></p>
+            <p><strong>Stock Status:</strong> 
+                <span class="<%= shoe.quantity > 0 ? 'text-green-600' : 'text-red-600' %>">
+                    <%= shoe.quantity > 0 ? 'In Stock (' + shoe.quantity + ')' : 'Out of Stock' %>
+                </span>
+            </p>
 
-        <!-- Related Products -->
-        <div class="mt-12">
-            <h3 class="text-2xl font-bold mb-6">You Might Also Like</h3>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <% 
-                // Show 4 random shoes from the same gender (excluding current shoe)
-                const relatedShoes = shoes
-                    .filter(s => s.gender === shoe.gender && s.id !== shoe.id)
-                    .slice(0, 4);
-                %>
-                
-                <% relatedShoes.forEach(relatedShoe => { %>
-                    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
-                        <img src="<%= relatedShoe.image %>" alt="<%= relatedShoe.name %>" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-lg font-semibold mb-2"><%= relatedShoe.name %></h4>
-                            <p class="font-bold mb-4">
-                                $<%= relatedShoe.priceUSD %> / FRW <%= relatedShoe.priceFRW.toLocaleString() %>
-                            </p>
-                            <a href="/shop/<%= relatedShoe.id %>" 
-                                class="block w-full bg-lion-gold text-lion-black text-center py-2 rounded-lg font-semibold hover:bg-yellow-500">
-                                View Details
-                            </a>
-                        </div>
-                    </div>
-                <% }) %>
+            <!-- Buy Now / Out of Stock Button -->
+            <div class="mt-6">
+                <% if (shoe.quantity > 0) { %>
+                    <a href="/buy/<%= shoe.id %>" class="inline-block bg-lion-gold text-lion-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition">
+                        🛒 Buy Now
+                    </a>
+                <% } else { %>
+                    <button class="inline-block bg-gray-400 text-gray-700 px-6 py-2 rounded-lg font-semibold cursor-not-allowed" disabled>
+                        Out of Stock
+                    </button>
+                <% } %>
             </div>
         </div>
     </div>
