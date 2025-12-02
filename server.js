@@ -22,6 +22,33 @@ app.use(session({
     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
+// Add at the TOP of server.js
+require('dotenv').config();
+console.log('Environment check:', {
+  MONGO_URI: process.env.MONGO_URI ? 'SET' : 'NOT SET',
+  NODE_ENV: process.env.NODE_ENV
+});
+
+// Update your mongoose.connect
+const mongoURI = process.env.MONGO_URI;
+if (!mongoURI) {
+  console.error('❌ ERROR: MONGO_URI environment variable is not set!');
+  console.error('   Add MONGO_URI to Render environment variables');
+}
+
+mongoose.connect(mongoURI, {
+  serverSelectionTimeoutMS: 15000, // Increase timeout
+  socketTimeoutMS: 45000,
+})
+.then(() => {
+  console.log('🦁 Connected to MongoDB Atlas');
+  initializeDatabase();
+})
+.catch(err => {
+  console.error('MongoDB connection error:', err.message);
+  console.error('Check MONGO_URI in Render environment variables');
+});
+
 // Set EJS as template engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
